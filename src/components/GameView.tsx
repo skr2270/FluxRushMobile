@@ -25,39 +25,65 @@ export const GameView: React.FC<GameViewProps> = ({
 }) => {
   const { width, height } = useWindowDimensions();
 
-  // Pre-instantiate Skia Paint objects to avoid allocations in drawing loops
-  const bgPaint = Skia.Paint();
-  bgPaint.setColor(Skia.Color('#0a0a14'));
+  // Memoize Skia Paint objects to avoid allocations on every render
+  const {
+    bgPaint,
+    gridPaint,
+    trailPaint,
+    playerPaint,
+    playerGlowPaint,
+    collectiblePaint,
+    collectibleGlowPaint,
+    hazardPaint,
+    hazardGlowPaint,
+    particlePaint,
+  } = React.useMemo(() => {
+    const bg = Skia.Paint();
+    bg.setColor(Skia.Color('#0a0a14'));
 
-  const gridPaint = Skia.Paint();
-  gridPaint.setColor(Skia.Color('rgba(0, 255, 255, 0.05)'));
-  gridPaint.setStrokeWidth(1);
-  gridPaint.setStyle(PaintStyle.Stroke);
+    const grid = Skia.Paint();
+    grid.setColor(Skia.Color('rgba(0, 255, 255, 0.05)'));
+    grid.setStrokeWidth(1);
+    grid.setStyle(PaintStyle.Stroke);
 
-  const trailPaint = Skia.Paint();
-  trailPaint.setColor(Skia.Color('rgba(0, 255, 255, 0.25)'));
-  trailPaint.setStrokeWidth(4);
-  trailPaint.setStrokeCap(StrokeCap.Round);
-  trailPaint.setStyle(PaintStyle.Stroke);
+    const trail = Skia.Paint();
+    trail.setColor(Skia.Color('rgba(0, 255, 255, 0.25)'));
+    trail.setStrokeWidth(4);
+    trail.setStrokeCap(StrokeCap.Round);
+    trail.setStyle(PaintStyle.Stroke);
 
-  const playerPaint = Skia.Paint();
-  const playerGlowPaint = Skia.Paint();
-  
-  const collectiblePaint = Skia.Paint();
-  collectiblePaint.setColor(Skia.Color('#39ff14'));
-  const collectibleGlowPaint = Skia.Paint();
-  collectibleGlowPaint.setColor(Skia.Color('#39ff14'));
-  collectibleGlowPaint.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, 15, true));
+    const player = Skia.Paint();
+    const playerGlow = Skia.Paint();
 
-  const hazardPaint = Skia.Paint();
-  hazardPaint.setColor(Skia.Color('#ff003c'));
-  hazardPaint.setStrokeWidth(3);
-  hazardPaint.setStyle(PaintStyle.Stroke);
-  const hazardGlowPaint = Skia.Paint();
-  hazardGlowPaint.setColor(Skia.Color('#ff003c'));
-  hazardGlowPaint.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, 20, true));
+    const collectible = Skia.Paint();
+    collectible.setColor(Skia.Color('#39ff14'));
+    const collectibleGlow = Skia.Paint();
+    collectibleGlow.setColor(Skia.Color('#39ff14'));
+    collectibleGlow.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, 15, true));
 
-  const particlePaint = Skia.Paint();
+    const hazard = Skia.Paint();
+    hazard.setColor(Skia.Color('#ff003c'));
+    hazard.setStrokeWidth(3);
+    hazard.setStyle(PaintStyle.Stroke);
+    const hazardGlow = Skia.Paint();
+    hazardGlow.setColor(Skia.Color('#ff003c'));
+    hazardGlow.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, 20, true));
+
+    const particle = Skia.Paint();
+
+    return {
+      bgPaint: bg,
+      gridPaint: grid,
+      trailPaint: trail,
+      playerPaint: player,
+      playerGlowPaint: playerGlow,
+      collectiblePaint: collectible,
+      collectibleGlowPaint: collectibleGlow,
+      hazardPaint: hazard,
+      hazardGlowPaint: hazardGlow,
+      particlePaint: particle,
+    };
+  }, []);
 
   const onDraw = useDrawCallback((canvas) => {
     // 1. Draw Background
