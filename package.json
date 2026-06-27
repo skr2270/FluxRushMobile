@@ -6,7 +6,10 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "build:apk": "cd android && ./gradlew assembleRelease",
+    "build:aab": "cd android && ./gradlew bundleRelease",
+    "clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
     "@shopify/react-native-skia": "0.1.221",
