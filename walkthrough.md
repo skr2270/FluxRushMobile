@@ -25,9 +25,17 @@ The codebase compiles **cleanly with zero errors or warnings**.
 ---
 
 ## Git Repository
-Initialized Git repository inside `FluxRushMobile/` and staged all initial project files:
+Staged, committed, and pushed the codebase changes to GitHub:
 ```bash
-git init
-git add .
-git commit -m "Initial commit: FluxRush mobile React Native codebase"
+git push origin master
 ```
+
+---
+
+## Hand Tracking & Camera Fixes (2026-06-27)
+
+1. **Declared Camera Permissions**: Added the missing `<uses-permission android:name="android.permission.CAMERA" />` in `AndroidManifest.xml` to allow React Native Vision Camera to prompt for permissions and open correctly.
+2. **TAP-to-Request Interface**: Wrapped the camera permission-denied fallback screen in `CameraView.tsx` with a `TouchableOpacity` to let the user retap and retrigger the Android permission prompt.
+3. **Bypassed Handedness Filter**: Removed the unnecessary check on `result.confidence` in `InputManager.ts` (which is actually MediaPipe's left-vs-right handedness classification probability rather than tracking quality), resolving gesture tracking dropouts.
+4. **Successful Clean APK Compilation**: Compiled the release Android APK (`app-release.apk`) successfully on the unsynced local NTFS disk at `C:\Users\skr52\FluxRushMobileLocal` to avoid Google Drive client file lock collisions, yielding a successful compilation in `5m 45s`. The final APK was copied back to:
+   - [app-release.apk](file:///C:/Saikumar/Projects/GestureGame/FluxRushMobile/android/app/build/outputs/apk/release/app-release.apk) (~40.87 MB).
