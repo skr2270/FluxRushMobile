@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2026-06-27
+
+### Added
+- **Skia-Based Skeleton Wireframe Preview**: Created a new `<HandPreview>` component using Shopify Skia to draw a neon-colored hand skeleton on a dark background in the PIP preview window, hiding raw camera footage by default.
+- **Preview Toggle Support**: Implemented a `<CameraPreviewArea>` wrapper with an interactive button allowing users to switch between the skeleton view and the raw camera feed. Added a warning overlay that displays when the live video feed is exposed.
+
 ## [1.0.1] - 2026-06-27
 
 ### Fixed

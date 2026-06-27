@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions, Platform } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { CameraView } from './src/components/CameraView';
+import { CameraPreviewArea } from './src/components/CameraPreviewArea';
 import { GameView } from './src/components/GameView';
 import { ObjectPoolManager } from './src/managers/ObjectPoolManager';
 import { InputManager } from './src/managers/InputManager';
@@ -154,7 +154,7 @@ export default function App() {
     >
       {/* 1. Underlying Camera Feed / Hand Tracker */}
       <View style={styles.cameraContainer}>
-        <CameraView 
+        <CameraPreviewArea 
           onTrackingUpdate={(res: TrackingResult) => input.updateTracking(res)} 
           isCameraActive={gameState === 'PLAYING'} 
         />
