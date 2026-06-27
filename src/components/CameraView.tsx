@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { TrackingResult } from '../types';
 
@@ -92,11 +92,16 @@ export const CameraView: React.FC<CameraViewProps> = ({ onTrackingUpdate, isCame
     );
   }
 
+  const handleRequestPermission = async () => {
+    const granted = await requestPermission();
+    setPermissionStatus(granted ? 'granted' : 'denied');
+  };
+
   if (permissionStatus === 'denied' || !device) {
     return (
-      <View style={styles.center}>
+      <TouchableOpacity style={styles.center} onPress={handleRequestPermission} activeOpacity={0.8}>
         <Text style={styles.errorText}>Camera access unavailable. Touch mode active.</Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 

@@ -4,7 +4,6 @@ import { AdaptiveSmoother } from '../utils/AdaptiveSmoother';
 import { VelocityPredictor } from '../utils/VelocityPredictor';
 
 const performance = (globalThis as any).performance || { now: () => Date.now() };
-const navigator = { userAgent: 'Mobile' };
 
 export class InputManager {
   private kalman = new KalmanFilter();
@@ -21,8 +20,6 @@ export class InputManager {
   private handPresent = false;
   private rawConfidence = 0;
 
-  // Thresholds based on device class
-  private confidenceThreshold = 0.75;
   private screenWidth = 800;
   private screenHeight = 600;
 
@@ -34,8 +31,6 @@ export class InputManager {
   private tempVec: Vec2 = { x: 0, y: 0 };
 
   constructor() {
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    this.confidenceThreshold = isMobile ? 0.70 : 0.75;
   }
 
   public resize(width: number, height: number): void {
@@ -50,7 +45,7 @@ export class InputManager {
     const now = performance.now();
     this.rawConfidence = result.confidence;
 
-    if (!result.handPresent || result.confidence < this.confidenceThreshold || result.landmarks.length < 21) {
+    if (!result.handPresent || result.landmarks.length < 21) {
       this.handPresent = false;
       return;
     }

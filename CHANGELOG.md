@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Shield Timer Decay**: Changed shield decay calculation to scale with the actual frame delta (`dt`) instead of a hardcoded `1/60` decrement, fixing accelerated shield decay on high refresh-rate screens.
 - **Adaptive Smoother Latency Calculation**: Reordered the tracking update sequence inside `InputManager` to calculate `dt` before overwriting the last valid tracking timestamp. This restores correct speed-dependent filtering behavior.
+- **Camera Permissions**: Added the missing `android.permission.CAMERA` tag to `AndroidManifest.xml` so the camera can be initialized and prompt the user.
+- **Hand Gesture Tracking**: Bypassed the handedness classification confidence filter (`confidenceThreshold`) in `InputManager` to resolve tracking dropouts.
+- **Camera Fallback Interaction**: Made the fallback error overlay interactive with a `TouchableOpacity` trigger that prompts for camera permissions again on press.
 
 ### Optimized
 - **Skia Paint Allocations**: Memoized Paint objects in `GameView.tsx` via `React.useMemo` to prevent runtime object instantiation on every render, ensuring a 100% GC-free graphics rendering loop.
