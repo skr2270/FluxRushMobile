@@ -6,6 +6,7 @@ import { TrackingResult, Vec3 } from '../types';
 
 interface CameraPreviewAreaProps {
   isCameraActive: boolean;
+  controlMode: 'hand' | 'touch';
   onTrackingUpdate: (result: TrackingResult) => void;
 }
 
@@ -13,6 +14,7 @@ type PreviewMode = 'skeleton' | 'video';
 
 export const CameraPreviewArea: React.FC<CameraPreviewAreaProps> = ({
   isCameraActive,
+  controlMode,
   onTrackingUpdate,
 }) => {
   const [previewMode, setPreviewMode] = useState<PreviewMode>('skeleton');
@@ -64,7 +66,7 @@ export const CameraPreviewArea: React.FC<CameraPreviewAreaProps> = ({
       {/* 1. Underlying Camera Feed (Runs in background to process frames) */}
       <CameraView
         onTrackingUpdate={handleTrackingUpdate}
-        isCameraActive={isCameraActive}
+        isCameraActive={isCameraActive && controlMode === 'hand'}
       />
 
       {/* 2. Overlaid Skeleton Wireframe */}

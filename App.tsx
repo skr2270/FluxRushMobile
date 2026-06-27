@@ -46,6 +46,12 @@ export default function App() {
   const [health, setHealth] = useState(100);
   const [highScore, setHighScore] = useState(0);
   const [fps, setFps] = useState(60);
+  const [controlMode, setControlMode] = useState<'hand' | 'touch'>('hand');
+
+  const handleSetControlMode = (mode: 'hand' | 'touch') => {
+    setControlMode(mode);
+    input.setControlMode(mode);
+  };
 
   // Animation loop refs
   const lastTimeRef = useRef(performance.now());
@@ -153,12 +159,15 @@ export default function App() {
       onTouchMove={handleTouchInput}
     >
       {/* 1. Underlying Camera Feed / Hand Tracker */}
-      <View style={styles.cameraContainer}>
-        <CameraPreviewArea 
-          onTrackingUpdate={(res: TrackingResult) => input.updateTracking(res)} 
-          isCameraActive={gameState === 'PLAYING'} 
-        />
-      </View>
+      {controlMode === 'hand' && (
+        <View style={styles.cameraContainer}>
+          <CameraPreviewArea 
+            controlMode={controlMode}
+            onTrackingUpdate={(res: TrackingResult) => input.updateTracking(res)} 
+            isCameraActive={gameState === 'PLAYING'} 
+          />
+        </View>
+      )}
 
       {/* 2. Overlaid Hardware-Accelerated Skia Graphics */}
       <GameView
@@ -173,11 +182,20 @@ export default function App() {
 
       {/* 3. absolute HUD panel overlay */}
       {gameState === 'PLAYING' && (
-        <View style={styles.hudOverlay} pointerEvents="none">
+        <View style={styles.hudOverlay} pointerEvents="box-none">
           <View style={styles.hudRow}>
             <View style={styles.hudBadge}>
               <Text style={styles.hudText}>SCORE: {score.toString().padStart(5, '0')}</Text>
             </View>
+            <TouchableOpacity 
+              style={[styles.hudBadge, { borderColor: '#bd00ff' }]} 
+              onPress={() => handleSetControlMode(controlMode === 'hand' ? 'touch' : 'hand')}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.hudText, { color: '#bd00ff' }]}>
+                MODE: {controlMode === 'hand' ? 'GESTURE' : 'TOUCH'}
+              </Text>
+            </TouchableOpacity>
             <View style={styles.hudBadge}>
               <Text style={styles.hudText}>HEALTH: {health}%</Text>
             </View>
@@ -185,6 +203,26 @@ export default function App() {
           <View style={styles.statsPanel}>
             <Text style={styles.statsText}>FPS: {fps} | QUALITY: {qualityText}</Text>
           </View>
+        </View>
+      )}
+
+      {/* Touch Action Buttons for fallback gestures */}
+      {gameState === 'PLAYING' && controlMode === 'touch' && (
+        <View style={styles.touchActionsPanel}>
+          <TouchableOpacity 
+            style={[styles.actionButton, { borderColor: '#bd00ff' }]} 
+            onPress={() => input.triggerTouchShield()}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.actionButtonText, { color: '#bd00ff' }]}>SHIELD</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, { borderColor: '#00ffff' }]} 
+            onPress={() => input.triggerTouchEMP()}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.actionButtonText, { color: '#00ffff' }]}>EMP PULSE</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -198,6 +236,20 @@ export default function App() {
               Collect green particles, avoid red spikes.{'\n'}
               Make a fist for a shield, pinch to trigger EMP pulse.
             </Text>
+
+            <View style={styles.settingsRow}>
+              <Text style={styles.settingsLabel}>CONTROL:</Text>
+              <TouchableOpacity 
+                style={styles.settingsToggle} 
+                onPress={() => handleSetControlMode(controlMode === 'hand' ? 'touch' : 'hand')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.settingsToggleText}>
+                  {controlMode === 'hand' ? 'GESTURE (CAMERA)' : 'TOUCH SCREEN'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity style={styles.button} onPress={handleStartGame}>
               <Text style={styles.buttonText}>START GAME</Text>
             </TouchableOpacity>
@@ -213,6 +265,20 @@ export default function App() {
             <Text style={styles.gameOverText}>SYSTEM TERMINATED</Text>
             <Text style={styles.finalScore}>SCORE: {score}</Text>
             <Text style={styles.highScore}>HIGH SCORE: {highScore}</Text>
+
+            <View style={styles.settingsRow}>
+              <Text style={styles.settingsLabel}>CONTROL:</Text>
+              <TouchableOpacity 
+                style={styles.settingsToggle} 
+                onPress={() => handleSetControlMode(controlMode === 'hand' ? 'touch' : 'hand')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.settingsToggleText}>
+                  {controlMode === 'hand' ? 'GESTURE (CAMERA)' : 'TOUCH SCREEN'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity style={[styles.button, { borderColor: '#bd00ff' }]} onPress={handleStartGame}>
               <Text style={[styles.buttonText, { color: '#bd00ff' }]}>REINITIALIZE</Text>
             </TouchableOpacity>
@@ -336,5 +402,57 @@ const styles = StyleSheet.create({
     color: '#8c8ca3',
     fontSize: 14,
     marginBottom: 24,
+  },
+  touchActionsPanel: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -125 }], // centered (width of panel is 250px)
+    width: 250,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    zIndex: 15,
+  },
+  actionButton: {
+    borderWidth: 2,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+    backgroundColor: 'rgba(15, 15, 30, 0.85)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  actionButtonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  settingsLabel: {
+    fontSize: 13,
+    color: '#8c8ca3',
+    marginRight: 10,
+    fontWeight: 'bold',
+  },
+  settingsToggle: {
+    borderWidth: 1.5,
+    borderColor: '#00ffff',
+    borderRadius: 16,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(0, 255, 255, 0.05)',
+  },
+  settingsToggleText: {
+    color: '#00ffff',
+    fontSize: 11,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
 });

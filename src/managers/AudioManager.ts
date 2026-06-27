@@ -1,22 +1,44 @@
-// AudioManager.ts for React Native mobile
-// Adapts procedural audio to native sound modules (e.g., react-native-sound)
+import Sound from 'react-native-sound';
+
+// Enable playback in silent mode on iOS and configure background audio
+Sound.setCategory('Playback', true);
 
 export class AudioManager {
   private isBgmPlaying = false;
   private soundLibraryInitialized = false;
 
+  private collectSound: Sound | null = null;
+  private hitSound: Sound | null = null;
+  private comboSound: Sound | null = null;
+  private bgmSound: Sound | null = null;
+
   constructor() {
-    // Initialized on user interaction
+    // Assets are pre-loaded on user interaction to comply with OS audio session rules
   }
 
   public init(): void {
     if (this.soundLibraryInitialized) return;
 
     try {
-      console.log('Mobile Audio: Initializing SoundPool/AV players...');
-      // In production: pre-load local audio files
-      // Sound.setCategory('Ambient');
-      // this.collectSound = new Sound('collect.wav', Sound.MAIN_BUNDLE, ...);
+      console.log('Mobile Audio: Initializing SoundPool/AV players from Android assets...');
+      
+      // Load SFX files pre-compiled inside the android/app/src/main/assets bundle
+      this.collectSound = new Sound('collect.wav', Sound.MAIN_BUNDLE, (err) => {
+        if (err) console.warn('Failed to load collect sound', err);
+      });
+      
+      this.hitSound = new Sound('hit.wav', Sound.MAIN_BUNDLE, (err) => {
+        if (err) console.warn('Failed to load hit sound', err);
+      });
+      
+      this.comboSound = new Sound('combo.wav', Sound.MAIN_BUNDLE, (err) => {
+        if (err) console.warn('Failed to load combo sound', err);
+      });
+      
+      this.bgmSound = new Sound('bgm.wav', Sound.MAIN_BUNDLE, (err) => {
+        if (err) console.warn('Failed to load BGM sound', err);
+      });
+
       this.soundLibraryInitialized = true;
     } catch (e) {
       console.warn('Mobile Audio: Failed to initialize sound modules.', e);
@@ -25,44 +47,54 @@ export class AudioManager {
 
   public playCollect(): void {
     this.init();
-    if (!this.soundLibraryInitialized) return;
+    if (!this.soundLibraryInitialized || !this.collectSound) return;
 
-    // In production: play pre-loaded audio file
-    // this.collectSound.play();
-    console.log('Mobile Audio: Play Collect SFX');
+    // Stop and reset sound before playing to allow rapid overlapping blips
+    this.collectSound.stop(() => {
+      this.collectSound!.play();
+    });
   }
 
   public playCombo(_multiplier: number): void {
     this.init();
-    if (!this.soundLibraryInitialized) return;
+    if (!this.soundLibraryInitialized || !this.comboSound) return;
 
-    // In production: play combo sound depending on multiplier
-    console.log(`Mobile Audio: Play Combo SFX (x${_multiplier})`);
+    // Adjust volume slightly based on combo multiplier for a dynamic riser effect
+    const volume = Math.min(1.0, 0.4 + _multiplier * 0.1);
+    this.comboSound.setVolume(volume);
+    
+    this.comboSound.stop(() => {
+      this.comboSound!.play();
+    });
   }
 
   public playHit(): void {
     this.init();
-    if (!this.soundLibraryInitialized) return;
+    if (!this.soundLibraryInitialized || !this.hitSound) return;
 
-    // In production: play explosion sound
-    console.log('Mobile Audio: Play Hit SFX');
+    this.hitSound.stop(() => {
+      this.hitSound!.play();
+    });
   }
 
   public startBgm(): void {
     if (this.isBgmPlaying) return;
     this.init();
-    if (!this.soundLibraryInitialized) return;
-
+    
     this.isBgmPlaying = true;
-    // In production: loop BGM ambient drone
-    console.log('Mobile Audio: Play looping BGM');
+    if (this.bgmSound) {
+      this.bgmSound.setNumberOfLoops(-1); // Infinite loop
+      this.bgmSound.setVolume(0.35); // Lower background drone volume
+      this.bgmSound.play();
+    }
   }
 
   public stopBgm(): void {
     if (!this.isBgmPlaying) return;
     this.isBgmPlaying = false;
 
-    // In production: stop BGM loop
-    console.log('Mobile Audio: Stop BGM');
+    if (this.bgmSound) {
+      this.bgmSound.stop();
+    }
   }
 }

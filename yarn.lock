@@ -3167,6 +3167,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:0.72.6"
     react-native-haptic-feedback: "npm:2.2.0"
+    react-native-sound: "npm:^0.13.0"
     react-native-vision-camera: "npm:4.0.1"
     react-native-worklets-core: "npm:1.3.3"
     typescript: "npm:5.1.3"
@@ -5100,6 +5101,16 @@ __metadata:
   peerDependencies:
     react-native: ">=0.60.0"
   checksum: 10c0/6939804b1e3a4c1e35052a65c2536a00b6d7d93b2b5a5c4fc6ef690a06d043c38bf95536f9b54acfb32d08abf901b847171a574d0d863acfdee59cce012d2497
+  languageName: node
+  linkType: hard
+
+"react-native-sound@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "react-native-sound@npm:0.13.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/c061e12bf505c3245c4c28438a1a6737121c3b65df36d32e920897c40393f3b8f52328fed9377f400b5d9ffc55052cbe4eaacba5586e2fa4108a01ba7a5a3e27
   languageName: node
   linkType: hard
 
