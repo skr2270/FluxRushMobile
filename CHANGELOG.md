@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Skia-Based Skeleton Wireframe Preview**: Created a new `<HandPreview>` component using Shopify Skia to draw a neon-colored hand skeleton on a dark background in the PIP preview window, hiding raw camera footage by default.
 - **Preview Toggle Support**: Implemented a `<CameraPreviewArea>` wrapper with an interactive button allowing users to switch between the skeleton view and the raw camera feed. Added a warning overlay that displays when the live video feed is exposed.
+- **Dynamic Control Mode Settings**: Added HUD and Start screen toggles to switch between "Hand Gestures" and "Touch Screen" controls at any time. When in Touch Screen mode, the camera stream stops completely to save battery.
+- **Native Audio Player Integration**: Linked the `react-native-sound` library and implemented `AudioManager.ts` to pre-load and play the CC0 synthesized WAV sound effects from local assets with zero delay.
+- **Obfuscation & Package Renaming**: Renamed native Java directory structure and configuration namespaces to `com.fluxrush` and enabled ProGuard code minifiers for release builds.
 
 ## [1.0.1] - 2026-06-27
 
