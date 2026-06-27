@@ -9,6 +9,8 @@
     "ts:check": "tsc --noEmit",
     "build:apk": "cd android && ./gradlew assembleRelease",
     "build:aab": "cd android && ./gradlew bundleRelease",
+    "release:android": "react-native run-android --mode=release",
+    "release:ios": "react-native run-ios --configuration Release",
     "clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
