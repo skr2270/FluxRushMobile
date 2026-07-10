@@ -11,6 +11,8 @@ android/.gradle/
 *.apk
 *.aar
 *.aab
+*.keystore
+*.jks
 
 # iOS build outputs
 ios/build/
