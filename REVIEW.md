@@ -12,3 +12,4 @@ All release-blocking issues, performance bottlenecks, and specifications have be
 - **Skia Performance and Heap Allocations:** Resolved. Pre-allocated a single `reusablePath` object and memoized `textPaint` instances to avoid frame-time Skia allocations.
 - **Excessive Re-renders (FPS Throttling):** Resolved. Throttled FPS state setters to update React ONLY when values actually transition, reducing re-renders from 60FPS to ~2FPS.
 - **Stale Hand Presence Check:** Resolved. Wrapped hand presence transitions inside loop-based state checks to prevent out-of-sync HUD renderings.
+- **Touch / Pointer Coordinate Jitter & Drift:** Resolved. Implemented check in `InputManager.ts` to disable Kalman filter velocity prediction during touch mode, resolving stationary drift.
