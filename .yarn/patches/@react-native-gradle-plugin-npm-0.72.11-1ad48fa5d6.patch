@@ -1,0 +1,13 @@
+diff --git a/build.gradle.kts b/build.gradle.kts
+index aba364903b2857e0e12e1c3fae62bb2141bd125c..e000c90a4e89d8e5208fc44b2942289d2330b694 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -7,7 +7,7 @@
+ 
+ import org.gradle.api.internal.classpath.ModuleRegistry
+ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+-import org.gradle.configurationcache.extensions.serviceOf
++import org.gradle.kotlin.dsl.support.serviceOf
+ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+ 
+ plugins {
