@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Vision Camera worklet integration**: Linked native worklet frame processing inside `CameraView.tsx` with proper imports and safe JS thread hopping (`useRunOnJS`, `globalThis`), resolving compilation issues.
 
 ### Fixed
+- **Touch coordinates tracking drift**: Prevented Kalman prediction/velocity extrapolation during touch control mode to stop cursor drifting during idle frames.
 - **Floating text Skia rendering**: Added canvas drawing commands inside `GameView.tsx` Skia's `onDraw` hook utilizing matched system font metrics (`matchFont`).
 - **Android WAV asset loading**: Corrected the base resource path in `AudioManager.ts` from `Sound.MAIN_BUNDLE` to empty string `''` on Android to stream assets correctly.
 
