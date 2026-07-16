@@ -23,16 +23,21 @@ export const CameraPreviewArea: React.FC<CameraPreviewAreaProps> = ({
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const noticeTimeoutRef = useRef<any>(null);
 
+  // Check if we are running in simulation mode (native plugin missing in simulator/previews)
+  const isSimulationMode = !(globalThis as any).detectHandLandmarks;
+
   // Reset tracking on startup to ensure input manager starts fresh
   useEffect(() => {
     onTrackingUpdate({ landmarks: [], confidence: 0, handPresent: false, latencyMs: 0 });
   }, [onTrackingUpdate]);
 
-  // Local simulated loop to showcase skeleton hand wireframe in the preview inset
+  // Local simulated loop ONLY when in simulator mode (no native MediaPipe plugin)
   useEffect(() => {
-    if (!isCameraActive) {
-      setLandmarks([]);
-      setHandPresent(false);
+    if (!isCameraActive || !isSimulationMode) {
+      if (!isSimulationMode) {
+        setLandmarks([]);
+        setHandPresent(false);
+      }
       return;
     }
 
@@ -66,7 +71,23 @@ export const CameraPreviewArea: React.FC<CameraPreviewAreaProps> = ({
     }, 33);
 
     return () => clearInterval(interval);
-  }, [isCameraActive, previewMode, onTrackingUpdate]);
+  }, [isCameraActive, previewMode, onTrackingUpdate, isSimulationMode]);
+
+  const handleTrackingUpdate = (res: TrackingResult) => {
+    // 1. Pass tracking result to parent (App / InputManager)
+    onTrackingUpdate(res);
+
+    // 2. If camera is processing actual landmarks, render them in preview skeleton
+    if (!isSimulationMode) {
+      if (res.handPresent && previewMode === 'skeleton') {
+        setLandmarks(res.landmarks);
+        setHandPresent(true);
+      } else {
+        setLandmarks([]);
+        setHandPresent(false);
+      }
+    }
+  };
 
   const toggleMode = () => {
     if (previewMode === 'skeleton') {
@@ -100,7 +121,7 @@ export const CameraPreviewArea: React.FC<CameraPreviewAreaProps> = ({
       {/* 1. Underlying Camera Feed (Runs in background to process frames) */}
       <CameraView
         isCameraActive={isCameraActive && controlMode === 'hand'}
-        onTrackingUpdate={onTrackingUpdate}
+        onTrackingUpdate={handleTrackingUpdate}
       />
 
       {/* 2. Overlaid Skeleton Wireframe */}

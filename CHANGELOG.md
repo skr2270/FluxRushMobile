@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.4] - 2026-07-17
+
+### Added
+- **HUD Level, Combo & Shield Progress Indicators**: Integrated Level count, animated combo time decay bar, and shield duration/cooldown progress bars to make core systems visible.
+- **Audio Control System**: Added 4-state cycling volume settings button (`MUTED`, `LOW`, `MEDIUM`, `HIGH`) and colorblind mode toggle to start/pause overlays.
+- **Edge Warning Approaching Indicators**: Rendered off-screen warning arrows pointing toward hazards approaching the playable canvas area.
+- **Colorblind-Safe Mode**: Created high-contrast blue/orange color swaps and shape distinctions ("+" and "X" overlays) for deuteranopia/protanopia compatibility in Skia drawing.
+- **Pause & Resume Menu**: Add pause menu overlays and AppState change listeners to suspend play, freeze ticks, and mute ambient music when backgrounded.
+- **Social Graph Share API**: Integrated native Share dialog interface on gameover screen.
+
+### Fixed
+- **Real Hand Detection Connection**: Connected the native Vision Camera frame processor output directly to the parent game input pipeline, discarding simulated tracking loops on physical devices.
+- **Touch Screen Coordinates Offset**: Mapped touch events utilizing absolute screen coordinates (`pageX`/`pageY`) instead of relative view offsets, ensuring notch safety.
+- **Sound Player Load Safety**: Verified the existence of asset wav files in `AudioManager.ts` prior to instantiation to prevent empty file crashes.
+- **Skia Performance Allocations**: Memoized all `Skia.Paint()`, `Skia.Color()`, and blur `MaskFilter` instances to fully eliminate GPU memory churn.
+- **Dynamic Haptics Load Safety**: Wrapped React Native Haptic Feedback import in runtime conditional blocks to support non-haptic simulators.
+
 ## [1.0.3] - 2026-07-16
 
 ### Added
