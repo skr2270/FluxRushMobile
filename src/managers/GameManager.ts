@@ -4,12 +4,9 @@ import { InputManager } from './InputManager';
 import { AudioManager } from './AudioManager';
 import { EffectsManager } from './EffectsManager';
 import { SpatialHash } from '../utils/SpatialHash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const performance = (globalThis as any).performance || { now: () => Date.now() };
-const localStorage = {
-  getItem: (_key: string) => null,
-  setItem: (_key: string, _value: string) => {}
-};
 
 export class GameManager {
   private state: GameState = 'MENU';
@@ -59,10 +56,16 @@ export class GameManager {
     this.audio = audio;
     this.effects = effects;
     this.spatialHash = new SpatialHash<GameCollectible | GameHazard>(this.width, this.height, 100);
+  }
 
-    const storedHighScore = localStorage.getItem('gesture_game_highscore');
-    if (storedHighScore) {
-      this.highScore = parseInt(storedHighScore, 10);
+  public async loadHighScore(): Promise<void> {
+    try {
+      const storedHighScore = await AsyncStorage.getItem('gesture_game_highscore');
+      if (storedHighScore) {
+        this.highScore = parseInt(storedHighScore, 10);
+      }
+    } catch (e) {
+      console.warn('Failed to load high score:', e);
     }
   }
 
@@ -103,7 +106,9 @@ export class GameManager {
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      localStorage.setItem('gesture_game_highscore', this.score.toString());
+      AsyncStorage.setItem('gesture_game_highscore', this.score.toString()).catch((e) => {
+        console.warn('Failed to save high score:', e);
+      });
     }
   }
 

@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import Sound from 'react-native-sound';
 
 // Enable playback in silent mode on iOS and configure background audio
@@ -22,20 +23,22 @@ export class AudioManager {
     try {
       console.log('Mobile Audio: Initializing SoundPool/AV players from Android assets...');
       
-      // Load SFX files pre-compiled inside the android/app/src/main/assets bundle
-      this.collectSound = new Sound('collect.wav', Sound.MAIN_BUNDLE, (err) => {
+      const basePath = Platform.OS === 'android' ? '' : Sound.MAIN_BUNDLE;
+
+      // Load SFX files pre-compiled inside the assets bundle
+      this.collectSound = new Sound('collect.wav', basePath, (err) => {
         if (err) console.warn('Failed to load collect sound', err);
       });
       
-      this.hitSound = new Sound('hit.wav', Sound.MAIN_BUNDLE, (err) => {
+      this.hitSound = new Sound('hit.wav', basePath, (err) => {
         if (err) console.warn('Failed to load hit sound', err);
       });
       
-      this.comboSound = new Sound('combo.wav', Sound.MAIN_BUNDLE, (err) => {
+      this.comboSound = new Sound('combo.wav', basePath, (err) => {
         if (err) console.warn('Failed to load combo sound', err);
       });
       
-      this.bgmSound = new Sound('bgm.wav', Sound.MAIN_BUNDLE, (err) => {
+      this.bgmSound = new Sound('bgm.wav', basePath, (err) => {
         if (err) console.warn('Failed to load BGM sound', err);
       });
 

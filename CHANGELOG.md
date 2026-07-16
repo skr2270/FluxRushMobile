@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-07-16
+
+### Added
+- **AsyncStorage high score persistence**: Switched from mocked stubs to `@react-native-async-storage/async-storage` to load and save high scores across application launches.
+- **AI status tracking HUD badge**: Added a status badge displaying `ACTIVE` / `NO HAND` connection state in GESTURE mode.
+- **Simulator landmark feed**: Connected the simulated landmark loop inside `CameraPreviewArea.tsx` directly to the `onTrackingUpdate` callback prop so the cursor moves in the simulator.
+- **Vision Camera worklet integration**: Linked native worklet frame processing inside `CameraView.tsx` with proper imports and safe JS thread hopping (`useRunOnJS`, `globalThis`), resolving compilation issues.
+
+### Fixed
+- **Floating text Skia rendering**: Added canvas drawing commands inside `GameView.tsx` Skia's `onDraw` hook utilizing matched system font metrics (`matchFont`).
+- **Android WAV asset loading**: Corrected the base resource path in `AudioManager.ts` from `Sound.MAIN_BUNDLE` to empty string `''` on Android to stream assets correctly.
+
+### Optimized
+- **Skia garbage collection optimizations**: Pre-allocated and reused a single Skia `reusablePath` object and memoized `textPaint` instances to avoid frame-time allocations.
+- **Throttled React updates**: Throttled FPS state setters and hand visible state transitions inside `App.tsx`'s loop to reduce JS-to-Native bridge re-renders from 60FPS to ~2FPS.
+
 ## [1.0.2] - 2026-06-27
 
 ### Added

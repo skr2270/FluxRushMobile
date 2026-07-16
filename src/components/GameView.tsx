@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
-import { SkiaView, useDrawCallback, Skia, PaintStyle, StrokeCap, BlurStyle } from '@shopify/react-native-skia';
+import { SkiaView, useDrawCallback, Skia, PaintStyle, StrokeCap, BlurStyle, matchFont } from '@shopify/react-native-skia';
 import { ObjectPoolManager } from '../managers/ObjectPoolManager';
 import { Vec2 } from '../types';
 
@@ -25,7 +25,16 @@ export const GameView: React.FC<GameViewProps> = ({
 }) => {
   const { width, height } = useWindowDimensions();
 
-  // Memoize Skia Paint objects to avoid allocations on every render
+  // Matched System Font for text drawing
+  const font = React.useMemo(() => {
+    return matchFont({
+      fontFamily: 'System',
+      fontSize: 18,
+      fontWeight: 'bold',
+    });
+  }, []);
+
+  // Memoize Skia Paint and Path objects to avoid allocations on every render
   const {
     bgPaint,
     gridPaint,
@@ -37,6 +46,8 @@ export const GameView: React.FC<GameViewProps> = ({
     hazardPaint,
     hazardGlowPaint,
     particlePaint,
+    textPaint,
+    reusablePath,
   } = React.useMemo(() => {
     const bg = Skia.Paint();
     bg.setColor(Skia.Color('#0a0a14'));
@@ -71,6 +82,11 @@ export const GameView: React.FC<GameViewProps> = ({
 
     const particle = Skia.Paint();
 
+    const text = Skia.Paint();
+    text.setStyle(PaintStyle.Fill);
+
+    const path = Skia.Path.Make();
+
     return {
       bgPaint: bg,
       gridPaint: grid,
@@ -82,6 +98,8 @@ export const GameView: React.FC<GameViewProps> = ({
       hazardPaint: hazard,
       hazardGlowPaint: hazardGlow,
       particlePaint: particle,
+      textPaint: text,
+      reusablePath: path,
     };
   }, []);
 
@@ -96,41 +114,51 @@ export const GameView: React.FC<GameViewProps> = ({
       
       // Horizontal lines
       for (let r = 0; r < rows; r++) {
-        const path = Skia.Path.Make();
-        for (let c = 0; c < cols; c++) { // wait, 'cx' is loop index
+        reusablePath.reset();
+        let first = true;
+        for (let c = 0; c < cols; c++) {
           const idx = r * cols + c;
           const node = gridNodes[idx];
           if (node) {
-            if (c === 0) path.moveTo(node.x, node.y);
-            else path.lineTo(node.x, node.y);
+            if (first) {
+              reusablePath.moveTo(node.x, node.y);
+              first = false;
+            } else {
+              reusablePath.lineTo(node.x, node.y);
+            }
           }
         }
-        canvas.drawPath(path, gridPaint);
+        canvas.drawPath(reusablePath, gridPaint);
       }
 
       // Vertical lines
       for (let c = 0; c < cols; c++) {
-        const path = Skia.Path.Make();
+        reusablePath.reset();
+        let first = true;
         for (let r = 0; r < rows; r++) {
           const idx = r * cols + c;
           const node = gridNodes[idx];
           if (node) {
-            if (r === 0) path.moveTo(node.x, node.y);
-            else path.lineTo(node.x, node.y);
+            if (first) {
+              reusablePath.moveTo(node.x, node.y);
+              first = false;
+            } else {
+              reusablePath.lineTo(node.x, node.y);
+            }
           }
         }
-        canvas.drawPath(path, gridPaint);
+        canvas.drawPath(reusablePath, gridPaint);
       }
     }
 
     // 3. Draw Player Trail
     if (isHandVisible && trailHistory.length > 1) {
-      const path = Skia.Path.Make();
-      path.moveTo(trailHistory[0].x, trailHistory[0].y);
+      reusablePath.reset();
+      reusablePath.moveTo(trailHistory[0].x, trailHistory[0].y);
       for (let i = 1; i < trailHistory.length; i++) {
-        path.lineTo(trailHistory[i].x, trailHistory[i].y);
+        reusablePath.lineTo(trailHistory[i].x, trailHistory[i].y);
       }
-      canvas.drawPath(path, trailPaint);
+      canvas.drawPath(reusablePath, trailPaint);
     }
 
     // 4. Draw Collectibles
@@ -160,14 +188,14 @@ export const GameView: React.FC<GameViewProps> = ({
       }
 
       // Draw the triangular obstacle
-      const path = Skia.Path.Make();
+      reusablePath.reset();
       const s = h.size;
-      path.moveTo(0, -s);
-      path.lineTo(s * 0.86, s * 0.5);
-      path.lineTo(-s * 0.86, s * 0.5);
-      path.close();
+      reusablePath.moveTo(0, -s);
+      reusablePath.lineTo(s * 0.86, s * 0.5);
+      reusablePath.lineTo(-s * 0.86, s * 0.5);
+      reusablePath.close();
       
-      canvas.drawPath(path, hazardPaint);
+      canvas.drawPath(reusablePath, hazardPaint);
       canvas.restore();
     }
 
@@ -195,6 +223,17 @@ export const GameView: React.FC<GameViewProps> = ({
       }
       
       canvas.drawCircle(cursor.x, cursor.y, radius, playerPaint);
+    }
+
+    // 8. Draw Floating Texts
+    const texts = pool.getFloatingTexts();
+    for (let i = 0; i < texts.length; i++) {
+      const t = texts[i];
+      if (!t.active) continue;
+
+      textPaint.setColor(Skia.Color(t.color));
+      textPaint.setAlphaf(t.alpha);
+      canvas.drawText(t.text, t.pos.x, t.pos.y, textPaint, font);
     }
   }, [pool, cursor, isHandVisible, isShieldActive, quality, gridNodes, trailHistory]);
 

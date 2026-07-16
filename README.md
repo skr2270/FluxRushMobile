@@ -41,7 +41,7 @@ FluxRushMobile/
         ├── InputManager.ts        # Coordinate transformation & gesture parser
         ├── ObjectPoolManager.ts   # pre-allocated entity pools
         ├── GameManager.ts         # Main game loop state, EMP logic, scoring
-        ├── AudioManager.ts        # Audio stubs for native mobile playback
+        ├── AudioManager.ts        # Audio manager loading WAV files dynamically
         └── PerformanceMonitor.ts  # Budget monitor & adaptive quality engine
 ```
 

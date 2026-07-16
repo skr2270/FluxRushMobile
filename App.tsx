@@ -47,6 +47,7 @@ export default function App() {
   const [highScore, setHighScore] = useState(0);
   const [fps, setFps] = useState(60);
   const [controlMode, setControlMode] = useState<'hand' | 'touch'>('hand');
+  const [handPresentState, setHandPresentState] = useState(false);
 
   const handleSetControlMode = (mode: 'hand' | 'touch') => {
     setControlMode(mode);
@@ -58,6 +59,15 @@ export default function App() {
   const loopActiveRef = useRef(false);
   const prevHealthRef = useRef(100);
   const prevScoreRef = useRef(0);
+  const prevFpsRef = useRef(60);
+  const prevHandVisibleRef = useRef(false);
+
+  // Load persisted high score on mount
+  useEffect(() => {
+    game.loadHighScore().then(() => {
+      setHighScore(game.getHighScore());
+    });
+  }, [game]);
 
   // Sync window dimensions on resize
   useEffect(() => {
@@ -120,7 +130,18 @@ export default function App() {
       // Record performance parameters
       perf.recordFrame(dt * 1000, jsTime, 1.0); // Estimate average draw overhead as 1ms
       const stats = perf.getStats();
-      setFps(stats.fps);
+      const currentFps = stats.fps;
+      if (currentFps !== prevFpsRef.current) {
+        setFps(currentFps);
+        prevFpsRef.current = currentFps;
+      }
+
+      // Record hand presence transitions to trigger HUD re-renders cleanly
+      const isHandVisibleNow = input.isHandVisible();
+      if (isHandVisibleNow !== prevHandVisibleRef.current) {
+        setHandPresentState(isHandVisibleNow);
+        prevHandVisibleRef.current = isHandVisibleNow;
+      }
     };
 
     if (gameState === 'PLAYING') {
@@ -196,6 +217,13 @@ export default function App() {
                 MODE: {controlMode === 'hand' ? 'GESTURE' : 'TOUCH'}
               </Text>
             </TouchableOpacity>
+            {controlMode === 'hand' && (
+              <View style={[styles.hudBadge, { borderColor: handPresentState ? '#39ff14' : '#ff003c' }]}>
+                <Text style={[styles.hudText, { color: handPresentState ? '#39ff14' : '#ff003c' }]}>
+                  AI: {handPresentState ? 'ACTIVE' : 'NO HAND'}
+                </Text>
+              </View>
+            )}
             <View style={styles.hudBadge}>
               <Text style={styles.hudText}>HEALTH: {health}%</Text>
             </View>
