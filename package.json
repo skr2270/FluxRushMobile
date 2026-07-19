@@ -7,11 +7,12 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "ts:check": "tsc --noEmit",
-    "build:apk": "cd android && ./gradlew assembleRelease",
-    "build:aab": "cd android && ./gradlew bundleRelease",
-    "release:android": "react-native run-android --mode=release",
-    "release:ios": "react-native run-ios --configuration Release",
-    "clean": "cd android && ./gradlew clean",
+    "clean": "cd android && gradlew clean && cd..",
+    "test": "jest",
+    "build:dev-apk": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/ && cd android && gradlew assembleDebug --no-problems-report",
+    "android:release-apk": "cd android && gradlew.bat assembleRelease",
+    "android:release-aab": "cd android && gradlew.bat bundleRelease",
+    "android:signingReport": "cd android && gradlew.bat signingReport",
     "version:bump": "npm version patch"
   },
   "dependencies": {
