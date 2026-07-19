@@ -40,7 +40,7 @@ export default function App() {
   const input = useMemo(() => new InputManager(), []);
   const audio = useMemo(() => new AudioManager(), []);
   const effects = useMemo(() => new EffectsManager(), []);
-  
+
   const [qualityText, setQualityText] = useState('HIGH');
   const perf = useMemo(() => new PerformanceMonitor((q) => {
     setQualityText(q);
@@ -118,7 +118,7 @@ export default function App() {
   // Run the core gameplay loop (60/120 FPS)
   useEffect(() => {
     loopActiveRef.current = gameState === 'PLAYING' && !isPaused;
-    
+
     let frameId: number;
     const tick = (timestamp: number) => {
       if (!loopActiveRef.current) return;
@@ -141,13 +141,13 @@ export default function App() {
       // Throttle HUD state synchronization to prevent JS thread bottleneck
       const currentScore = game.getScore();
       const currentHealth = game.getHealth();
-      
+
       if (currentScore !== prevScoreRef.current) {
         setScore(currentScore);
         triggerHaptic('impactLight');
         prevScoreRef.current = currentScore;
       }
-      
+
       if (currentHealth !== prevHealthRef.current) {
         setHealth(currentHealth);
         if (currentHealth < prevHealthRef.current) {
@@ -210,14 +210,14 @@ export default function App() {
     prevScoreRef.current = 0;
     prevHealthRef.current = 100;
     setIsPaused(false);
-    
+
     game.startGame();
     setGameState('PLAYING');
     triggerHaptic('impactLight');
   };
 
   const handleDismissTutorial = () => {
-    AsyncStorage.setItem('fluxrush_first_play', 'false').catch(() => {});
+    AsyncStorage.setItem('fluxrush_first_play', 'false').catch(() => { });
     setShowTutorial(false);
     handleStartGame();
   };
@@ -281,18 +281,18 @@ export default function App() {
   };
 
   return (
-    <View 
-      style={styles.container} 
-      onTouchStart={handleTouchInput} 
+    <View
+      style={styles.container}
+      onTouchStart={handleTouchInput}
       onTouchMove={handleTouchInput}
     >
       {/* 1. Underlying Camera Feed / Hand Tracker */}
       {controlMode === 'hand' && (
         <View style={styles.cameraContainer}>
-          <CameraPreviewArea 
+          <CameraPreviewArea
             controlMode={controlMode}
-            onTrackingUpdate={(res: TrackingResult) => input.updateTracking(res)} 
-            isCameraActive={gameState === 'PLAYING' && !isPaused} 
+            onTrackingUpdate={(res: TrackingResult) => input.updateTracking(res)}
+            isCameraActive={gameState === 'PLAYING' && !isPaused}
           />
         </View>
       )}
@@ -329,16 +329,16 @@ export default function App() {
               <Text style={[styles.hudText, { color: '#bd00ff' }]}>SHIELD: {shieldStatus}</Text>
               <View style={styles.barBg}>
                 <View style={[
-                  styles.shieldBarFill, 
-                  { 
+                  styles.shieldBarFill,
+                  {
                     width: `${(game.isShieldActive() ? shieldRatio : shieldCooldownRatio) * 100}%`,
                     backgroundColor: game.isShieldActive() ? '#bd00ff' : '#8c8ca3'
                   }
                 ]} />
               </View>
             </View>
-            <TouchableOpacity 
-              style={[styles.hudBadge, { borderColor: '#bd00ff' }]} 
+            <TouchableOpacity
+              style={[styles.hudBadge, { borderColor: '#bd00ff' }]}
               onPress={() => handleSetControlMode(controlMode === 'hand' ? 'touch' : 'hand')}
               activeOpacity={0.7}
             >
@@ -346,8 +346,8 @@ export default function App() {
                 MODE: {controlMode === 'hand' ? 'GESTURE' : 'TOUCH'}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.hudBadge, { borderColor: '#00ffff' }]} 
+            <TouchableOpacity
+              style={[styles.hudBadge, { borderColor: '#00ffff' }]}
               onPress={togglePause}
               activeOpacity={0.7}
             >
@@ -366,15 +366,15 @@ export default function App() {
       {/* Touch Action Buttons for fallback gestures */}
       {gameState === 'PLAYING' && controlMode === 'touch' && !isPaused && (
         <View style={styles.touchActionsPanel}>
-          <TouchableOpacity 
-            style={[styles.actionButton, { borderColor: '#bd00ff' }]} 
+          <TouchableOpacity
+            style={[styles.actionButton, { borderColor: '#bd00ff' }]}
             onPress={() => input.triggerTouchShield()}
             activeOpacity={0.7}
           >
             <Text style={[styles.actionButtonText, { color: '#bd00ff' }]}>SHIELD</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.actionButton, { borderColor: '#00ffff' }]} 
+          <TouchableOpacity
+            style={[styles.actionButton, { borderColor: '#00ffff' }]}
             onPress={() => input.triggerTouchEMP()}
             activeOpacity={0.7}
           >
@@ -396,8 +396,8 @@ export default function App() {
 
             <View style={styles.settingsRow}>
               <Text style={styles.settingsLabel}>CONTROL:</Text>
-              <TouchableOpacity 
-                style={styles.settingsToggle} 
+              <TouchableOpacity
+                style={styles.settingsToggle}
                 onPress={() => handleSetControlMode(controlMode === 'hand' ? 'touch' : 'hand')}
                 activeOpacity={0.7}
               >
@@ -463,7 +463,7 @@ export default function App() {
         <View style={styles.tutorialScreen}>
           <View style={styles.glassPanel}>
             <Text style={styles.tutorialTitle}>SYSTEM OVERVIEW</Text>
-            
+
             <View style={styles.tutorialItem}>
               <Text style={styles.tutorialEmoji}>☝️</Text>
               <View style={styles.tutorialTextContainer}>
@@ -499,15 +499,15 @@ export default function App() {
       {gameState === 'GAMEOVER' && (
         <View style={styles.overlayScreen}>
           <View style={styles.glassPanel}>
-            <Text style={[styles.title, { color: '#ff003c' }]}>FLUX COLLAPSE</Text>
+            <Text style={[styles.title, { color: '#ff003c' }]}>FLUX RUSH</Text>
             <Text style={styles.gameOverText}>SYSTEM TERMINATED</Text>
             <Text style={styles.finalScore}>SCORE: {score}</Text>
             <Text style={styles.highScore}>HIGH SCORE: {highScore}</Text>
 
             <View style={styles.settingsRow}>
               <Text style={styles.settingsLabel}>CONTROL:</Text>
-              <TouchableOpacity 
-                style={styles.settingsToggle} 
+              <TouchableOpacity
+                style={styles.settingsToggle}
                 onPress={() => handleSetControlMode(controlMode === 'hand' ? 'touch' : 'hand')}
                 activeOpacity={0.7}
               >
