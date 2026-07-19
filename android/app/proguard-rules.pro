@@ -8,3 +8,23 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# React Native Sound keep rules
+-keep class com.zmxv.RNSound.** { *; }
+
+# React Native Haptic Feedback keep rules
+-keep class com.mklich.org.reactnative.hapticfeedback.** { *; }
+
+# Shopify React Native Skia keep rules
+-keep class com.shopify.reactnative.skia.** { *; }
+
+# React Native Vision Camera keep rules
+-keep class com.mrousavy.camera.** { *; }
+
+# React Native Worklets Core keep rules
+-keep class com.margelo.worklets.** { *; }
+
+# Keep all classes with native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
