@@ -1,3 +1,5 @@
 module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
+  presets: ['module:@react-native/babel-preset'],
+  // react-native-worklets/plugin powers Reanimated 4 worklets and MUST be listed last.
+  plugins: ['react-native-worklets/plugin'],
 };

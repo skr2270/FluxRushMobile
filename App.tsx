@@ -601,7 +601,11 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   overlayScreen: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(7, 7, 13, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -609,7 +613,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   tutorialScreen: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(7, 7, 13, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',

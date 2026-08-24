@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { SkiaView, useDrawCallback, Skia, PaintStyle, StrokeCap } from '@shopify/react-native-skia';
+import { Canvas, Picture, createPicture, Skia, PaintStyle, StrokeCap } from '@shopify/react-native-skia';
 import { Vec3 } from '../types';
 
 interface HandPreviewProps {
@@ -55,7 +55,7 @@ export const HandPreview: React.FC<HandPreviewProps> = ({
     return { bgPaint: bg, bonePaint: bone, jointPaint: joint, tipPaint: tip };
   }, []);
 
-  const onDraw = useDrawCallback((canvas) => {
+  const picture = React.useMemo(() => createPicture((canvas) => {
     // 1. Draw dark background
     canvas.drawRect({ x: 0, y: 0, width, height }, bgPaint);
 
@@ -96,11 +96,13 @@ export const HandPreview: React.FC<HandPreviewProps> = ({
         canvas.drawCircle(x, y, 2, jointPaint);
       }
     }
-  }, [landmarks, handPresent, width, height]);
+  }), [landmarks, handPresent, width, height, bgPaint, bonePaint, jointPaint, tipPaint]);
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <SkiaView style={styles.canvas} onDraw={onDraw} />
+      <Canvas style={styles.canvas}>
+        <Picture picture={picture} />
+      </Canvas>
       {(!handPresent || landmarks.length < 21) && (
         <View style={styles.placeholderContainer}>
           <Text style={styles.placeholderText}>No hand detected</Text>
@@ -115,7 +117,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   placeholderContainer: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',

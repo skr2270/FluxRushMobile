@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
-import { SkiaView, useDrawCallback, Skia, PaintStyle, StrokeCap, BlurStyle, matchFont } from '@shopify/react-native-skia';
+import { Canvas, Picture, createPicture, Skia, PaintStyle, StrokeCap, BlurStyle, matchFont } from '@shopify/react-native-skia';
 import { ObjectPoolManager } from '../managers/ObjectPoolManager';
 import { Vec2 } from '../types';
 
@@ -126,7 +126,7 @@ export const GameView: React.FC<GameViewProps> = ({
     };
   }, []);
 
-  const onDraw = useDrawCallback((canvas) => {
+  const picture = React.useMemo(() => createPicture((canvas) => {
     // 1. Draw Background
     canvas.drawRect({ x: 0, y: 0, width, height }, bgPaint);
 
@@ -346,11 +346,16 @@ export const GameView: React.FC<GameViewProps> = ({
       textPaint.setAlphaf(t.alpha);
       canvas.drawText(t.text, t.pos.x, t.pos.y, textPaint, font);
     }
-  }, [pool, cursor, isHandVisible, isShieldActive, quality, gridNodes, trailHistory, colorblindMode]);
+  }), [pool, cursor, isHandVisible, isShieldActive, quality, gridNodes, trailHistory, colorblindMode,
+      bgPaint, gridPaint, trailPaint, playerPaint, playerGlowPaint, collectiblePaint,
+      collectibleGlowPaint, hazardPaint, hazardGlowPaint, particlePaint, textPaint,
+      reusablePath, colors, maskFilters, font, width, height]);
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <SkiaView style={styles.canvas} onDraw={onDraw} />
+      <Canvas style={styles.canvas}>
+        <Picture picture={picture} />
+      </Canvas>
     </View>
   );
 };
