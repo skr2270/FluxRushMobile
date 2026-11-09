@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.5] - 2026-08-24
+
+### Added
+- **Full iOS Platform Support**:
+  - Initialized native iOS project (`ios/FluxRushMobile.xcodeproj`, `ios/FluxRushMobile.xcworkspace`, `AppDelegate.swift`, `Info.plist`, `LaunchScreen.storyboard`, `PrivacyInfo.xcprivacy`).
+  - Integrated CocoaPods (`Podfile`, `Podfile.lock`) and added `npm run pods` script for dependency installation.
+  - Added iOS native sound assets (`bgm.wav`, `collect.wav`, `combo.wav`, `hit.wav`) directly to Xcode project resources.
+- **Android Kotlin Migration**:
+  - Migrated `MainActivity` and `MainApplication` from Java to Kotlin (`MainActivity.kt`, `MainApplication.kt`).
+  - Cleaned up legacy Flipper classes and configured modern React Native 0.87 application architecture.
+  - Updated `android/app/proguard-rules.pro` with keep rules for Skia, Vision Camera, and Worklets during release builds.
+- **Unified Build Scripts & Package Automation**:
+  - Added standardized build scripts in `package.json`: `build:apk`, `build:aab`, `build:dev-apk`, `android:release-apk`, `android:release-aab`, and `android:signingReport`.
+  - Added cross-platform release commands: `release:android` and `release:ios`.
+  - Integrated `@react-native/typescript-config` and updated Metro / Babel configs for React Native 0.87.
+
 ## [1.0.4] - 2026-07-17
 
 ### Added

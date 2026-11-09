@@ -26,9 +26,12 @@ This application is part of the **FluxRush** project ecosystem, living as a sist
 
 ```
 FluxRushMobile/
-├── package.json                   # Project dependencies (Vision Camera, Skia, Worklets)
-├── tsconfig.json                  # Strict TypeScript configuration
-├── App.tsx                        # Root layout, Camera permissions, coordinate bindings
+├── package.json                   # Project scripts and dependencies (React Native 0.87, Skia, Vision Camera)
+├── package-lock.json              # Lockfile for reproducible npm installs
+├── tsconfig.json                  # TypeScript configuration extending @react-native/typescript-config
+├── App.tsx                        # Root layout, Camera permissions, coordinate bindings, pause & HUD
+├── android/                       # Native Android project (Kotlin MainActivity/MainApplication, Gradle)
+├── ios/                           # Native iOS project (Swift AppDelegate, Podfile, Xcode workspace)
 └── src/
     ├── types/
     │   └── index.ts               # Shared game types
@@ -39,12 +42,14 @@ FluxRushMobile/
     │   └── SpatialHash.ts         # Collision partitioning grid
     ├── components/
     │   ├── CameraView.tsx         # Vision Camera Frame Processor container
+    │   ├── CameraPreviewArea.tsx  # PIP preview container with skeleton wireframe toggle
+    │   ├── HandPreview.tsx        # Skia-based neon skeleton wireframe renderer
     │   └── GameView.tsx           # React Native Skia Canvas viewport
     └── managers/
         ├── InputManager.ts        # Coordinate transformation & gesture parser
-        ├── ObjectPoolManager.ts   # pre-allocated entity pools
+        ├── ObjectPoolManager.ts   # Pre-allocated entity pools (GC-free)
         ├── GameManager.ts         # Main game loop state, EMP logic, scoring
-        ├── AudioManager.ts        # Audio manager loading WAV files dynamically
+        ├── AudioManager.ts        # Audio manager with native asset loading & guards
         └── PerformanceMonitor.ts  # Budget monitor & adaptive quality engine
 ```
 
@@ -53,34 +58,50 @@ FluxRushMobile/
 ## Running Locally
 
 ### Prerequisites
-- Node.js (v18+)
-- Yarn v4 (enabled via Corepack)
-- iOS: macOS with Xcode installed
-- Android: Android SDK & Android Studio installed
+- Node.js (>= 22.11.0 recommended)
+- npm or Yarn
+- iOS: macOS with Xcode and CocoaPods (`bundle exec pod install`)
+- Android: Android SDK & Android Studio
 
 ### Getting Started
 
 1. **Install Dependencies**:
    ```bash
-   yarn install
+   npm install
    ```
-2. **Start Metro Bundler**:
+
+2. **iOS Pods Setup (macOS only)**:
    ```bash
-   yarn start
+   npm run pods
    ```
-3. **Run on iOS**:
+
+3. **Start Metro Bundler**:
    ```bash
-   yarn ios
+   npm start
    ```
+
 4. **Run on Android**:
    ```bash
-   yarn android
+   npm run android
+   ```
+
+5. **Run on iOS**:
+   ```bash
+   npm run ios
    ```
 
 ---
 
-## Verification & Type Checks
-To verify that the codebase compiles with zero TypeScript errors:
-```bash
-yarn ts:check
-```
+## Build & Release Scripts
+
+| Command | Purpose |
+|---|---|
+| `npm run ts:check` | Strict TypeScript verification (`tsc --noEmit`) |
+| `npm run clean` | Clean Android build artifacts (`./gradlew clean`) |
+| `npm run pods` | Install iOS CocoaPods dependencies |
+| `npm run build:dev-apk` | Bundle assets & assemble debug Android APK |
+| `npm run build:apk` | Assemble release Android APK (`assembleRelease`) |
+| `npm run build:aab` | Generate release Android App Bundle (`bundleRelease`) |
+| `npm run android:signingReport` | Inspect Android signing keys |
+| `npm run release:android` | Build and run Android in release mode |
+| `npm run release:ios` | Build and run iOS in Release configuration |

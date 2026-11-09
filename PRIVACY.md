@@ -1,6 +1,6 @@
 # Privacy Policy for FluxRush Mobile
 
-**Last Updated:** June 28, 2026
+**Last Updated:** August 24, 2026
 
 At **FluxRush**, we take your privacy seriously. This Privacy Policy describes how we handle device camera permissions and local data when you play **FluxRush Mobile**.
 

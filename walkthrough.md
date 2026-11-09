@@ -18,9 +18,24 @@ FluxRush Mobile is a standalone React Native application built to deliver high-p
 
 We ran strict type verification inside `FluxRushMobile/`:
 ```bash
-yarn ts:check
+npm run ts:check
 ```
 The codebase compiles **cleanly with zero errors or warnings**.
+
+---
+
+## iOS Platform & Android Kotlin Modernization (2026-08-24)
+
+1. **Full iOS Platform Support**:
+   - Initialized Xcode project (`ios/FluxRushMobile.xcodeproj`), workspace, and CocoaPods (`Podfile`, `Podfile.lock`).
+   - Implemented Swift-based `AppDelegate.swift` and configured `PrivacyInfo.xcprivacy` with camera usage justifications.
+   - Bundled all synthesized sound effects (`bgm.wav`, `collect.wav`, `combo.wav`, `hit.wav`) into iOS application resources.
+2. **Android Modernization to Kotlin**:
+   - Replaced Java `MainActivity.java` and `MainApplication.java` with idiomatic Kotlin equivalents (`MainActivity.kt`, `MainApplication.kt`).
+   - Cleaned up obsolete Flipper debug declarations and updated ProGuard obfuscation rules for Skia and Vision Camera.
+3. **Consolidated Build & Release Automation**:
+   - Unified build commands in `package.json` for Android APKs, AABs, signing reports, and CocoaPods.
+   - Verified that TypeScript checks pass cleanly with `@react-native/typescript-config`.
 
 ---
 
